@@ -22,8 +22,23 @@ class AddPostView(CreateView):
     template_name = 'add_post.html'
     fields = '__all__'
 
+from django import forms
+class AddCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('name', 'body')
 
 class AddCommentView(CreateView):
     model = Comment
     template_name = 'add_comment.html'
-    fields = '__all__'
+    form_class = AddCommentForm
+    # fields = ('name', 'body')
+
+    def form_valid(self, form):
+        # self.object = form.save(commit=False)
+        print(self.kwargs)
+        form.instance.post_id = self.kwargs['pk']
+        form.instance.save()
+        return super(AddCommentView, self).form_valid(form)
+
+
